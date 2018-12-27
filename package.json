@@ -1,0 +1,27 @@
+{
+  "name": "pspjjc",
+  "version": "1.0.0",
+  "description": "平山铺家具城",
+  "main": "app.js",
+  "scripts": {
+      "build": "tsc",
+      "dev": "npm run build && npm run start",        
+      "start": "node ./dist/app.js",
+      "prod": "npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elechen/pspjjc.git"
+  },
+  "author": "chenxiaofeng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elechen/pspjjc/issues"
+  },
+  "homepage": "https://github.com/elechen/pspjjc#readme",
+  "dependencies": {
+    "@types/express": "^4.16.0",
+    "express": "^4.16.4",
+    "typescript": "^3.2.2"
+  }
+}
