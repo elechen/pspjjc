@@ -16,7 +16,7 @@ function genResponseXml(query: {}): string {
     'FromUserName': query['tousername'],
     'CreateTime': Math.floor(Date.now() / 1000),
     'MsgType': 'text',
-    'Conten': query['content']
+    'Content': query['content']
   };
   return wxutils.GenXml(obj);
 }
