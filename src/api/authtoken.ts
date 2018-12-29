@@ -3,7 +3,7 @@ import * as crypto from "crypto";
 
 export let router = Router();
 router.get('/', function (req: Request, res: Response) {
-  let token = process.env.WX_TOKEN ? process.env.WX_TOKEN : 'gdufs';
+  let token = process.env.WX_TOKEN;
   let args = [req.query.nonce, req.query.timestamp, token];
   args.sort();
   let argsSignature = sha1(args.join(''));
