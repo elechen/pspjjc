@@ -18,7 +18,7 @@ router.post('/', xmlparser({ trim: false, explicitArray: false }), function (req
 
 function GetHandler(req: Request): (req: Request, res: Response) => void {
   let func;
-  if (req.body.xml['echostr']) {
+  if (req.query['echostr']) {
     func = authtoken.handler;
   } else if (req.body.xml['msgtype'] == 'text') {
     func = textmsg.handler;
