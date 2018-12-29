@@ -5,6 +5,6 @@ export function GenXml(object: {}): string {
       let line = `<${key}><![CDATA[${element}]]></${key}>`;
       xml += line;
   }
-  xml += '</xml>'
+  xml += '</xml>';
   return xml;
 }

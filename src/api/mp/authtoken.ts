@@ -1,8 +1,7 @@
-import { Router, Request, Response } from "express";
+import { Request, Response } from "express";
 import * as crypto from "crypto";
 
-export let router = Router();
-router.get('/', function (req: Request, res: Response) {
+export function handler(req: Request, res: Response) {
   let token = process.env.WX_TOKEN;
   let args = [req.query.nonce, req.query.timestamp, token];
   args.sort();
@@ -12,12 +11,12 @@ router.get('/', function (req: Request, res: Response) {
   let echostr = req.query.echostr;
   if (req.query.signature === argsSignature) {
     res.send(echostr);
-    console.log('authtoken success');
+    console.log('verify token success');
   } else {
     res.send('fail');
-    console.log('authtoken failed');
+    console.log('verify token failed');
   }
-})
+}
 
 function sha1(argsStr: string): string {
   let hash = crypto.createHash('sha1');
