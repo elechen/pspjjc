@@ -22,13 +22,16 @@
   "dependencies": {
     "@types/express": "^4.16.0",
     "@types/express-xml-bodyparser": "^0.3.1",
+    "@types/request": "^2.48.1",
     "express": "^4.16.4",
     "express-xml-bodyparser": "^0.3.0",
     "module-alias": "^2.1.0",
+    "request": "^2.88.0",
     "typescript": "^3.2.2"
   },
   "_moduleAliases": {
     "@api": "dist/api",
-    "@utils": "dist/utils"
+    "@utils": "dist/utils",
+    "@define": "dist/define"
   }
 }

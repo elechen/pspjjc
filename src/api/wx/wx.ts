@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import * as xmlparser from 'express-xml-bodyparser';
 
-import * as authtoken from '@api/mp/authtoken';
-import * as textmsg from '@api/mp/textmsg';
-import * as subscribe from '@api/mp/subscribe';
+import * as authtoken from '@api/wx/authtoken';
+import * as textmsg from '@api/wx/textmsg';
+import * as subscribe from '@api/wx/subscribe';
 
 export let router = Router();
 router.post('/', xmlparser({ trim: false, explicitArray: false }), function (req: Request, res: Response) {

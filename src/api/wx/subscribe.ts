@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as mputils from '@utils/mputils';
+import * as mputils from '@utils/wxutils';
 
 export function handler(req: Request, res: Response) {
   res.setHeader('Content-Type', 'text/xml');

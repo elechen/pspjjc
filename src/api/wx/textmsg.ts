@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
-import * as mputils from '@utils/mputils';
+import * as wxutils from '@utils/wxutils';
+import {handler as template_order_hander} from '@api/wx/template-order';
 
 export function handler(req: Request, res: Response) {
   res.setHeader('Content-Type', 'text/xml');
-  res.send(genResponseXml(req.body.xml));
+  if(req.body.xml['content'] === '测试账单'){
+    template_order_hander(req, res);
+  }else{
+    res.send(genResponseXml(req.body.xml));
+  }
 }
 
 function genResponseXml(query: {}): string {
@@ -14,5 +19,5 @@ function genResponseXml(query: {}): string {
     'MsgType': 'text',
     'Content': query['content']
   };
-  return mputils.GenXml(obj);
+  return wxutils.GenXml(obj);
 }
