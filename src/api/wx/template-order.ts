@@ -42,7 +42,7 @@ export function handler(req: Request, res: Response) {
   wxutils.GetAccessToken((token: string) => {
     SendTemplateMessage(touser, token);
   });
-  res.send('sucess');
+  res.send('success');
 }
 
 function SendTemplateMessage(touser: string, token: string) {
