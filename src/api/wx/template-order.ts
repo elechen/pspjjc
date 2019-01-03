@@ -55,6 +55,8 @@ function SendTemplateMessage(touser: string, token: string) {
     topcolor: color,
     data: GenData()
   };
+  console.log('url->', url);
+  console.log('order->', order);
   request.post({ url: url, form: order }, function (err, httpResponse, body) {
     console.log('SendTemplateMessage Callback', err, body);
   });
