@@ -1,5 +1,5 @@
-const APPID = 'YOUR_APPID';
-const APPSECRET = 'YOUR_APPSECRET';
+const APPID = process.env.APPID;
+const APPSECRET = process.env.APPSECRET;
 const APIHOST = 'https://api.weixin.qq.com/cgi-bin';
 
 export const API_URL = {
