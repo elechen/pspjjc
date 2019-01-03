@@ -3,7 +3,7 @@ import * as wxutils from '@utils/wxutils';
 import * as wxdefine from '@define/wxdefine';
 import * as request from "request";
 
-const template_id = 'GNEosc4tROty2Hl-0x4LOuXd6JHnHFDu3EF9PJ1Cd3k';
+const template_id = 'DCNkK6xqUujTBSWul00x19JfyOFwxZBo4p0FIb8vMQM';
 const color = '#173177';
 
 interface ITEM {
@@ -12,19 +12,13 @@ interface ITEM {
 }
 
 // {{first.DATA}}
-// 房租：{{keyword1.DATA}}
-// 水费：{{keyword2.DATA}}
-// 电费：{{keyword3.DATA}}
-// 其他：{{keyword4.DATA}}
-// 合计：{{keyword5.DATA}}
+// 付款金额：{{keyword1.DATA}}
+// 交易单号：{{keyword2.DATA}}
 // {{remark.DATA}}
 interface DATA {
   'first': ITEM;
   'keyword1': ITEM;
   'keyword2': ITEM;
-  'keyword3': ITEM;
-  'keyword4': ITEM;
-  'keyword5': ITEM;
   'remark': ITEM;
 }
 
@@ -67,13 +61,10 @@ function SendTemplateMessage(touser: string, token: string) {
 
 function GenData(): DATA {
   let data: DATA = {
-    first: { value: '尊敬的101租客，这是您2019年2月的账单\n', color },
-    keyword1: { value: '¥500', color },
-    keyword2: { value: '¥10', color },
-    keyword3: { value: '¥100', color },
-    keyword4: { value: '¥35', color },
-    keyword5: { value: '¥645', color },
-    remark: { value: '\n点击查看详情，支持信用卡支付', color }
+    first: { value: '尊敬的101租客，您2019年2月的账单已结清\n', color },
+    keyword1: { value: '¥645', color },
+    keyword2: { value: '2564659879813214796416', color },
+    remark: { value: '\n点击查看详情', color }
   };
   return data;
 }
