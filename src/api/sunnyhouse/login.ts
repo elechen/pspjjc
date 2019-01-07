@@ -62,8 +62,8 @@ function auth2callback(req: Request, res: Response) {
       });
     }).catch(function (error) {
       console.log(error);
+      res.send('success');
     });
-    res.send('success');
   }
 }
 
