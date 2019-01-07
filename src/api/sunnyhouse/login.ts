@@ -25,21 +25,27 @@ interface USER_INFO {
 }
 
 export function handler(req: Request, res: Response) {
-  let uid = req.session.uid;
-  if (!uid) {
-    wxlogin(req, res);
+  console.log('login-req.query:', JSON.stringify(req.query));
+  if (req.query.code) {
+    auth2callback(req, res);
   } else {
-    uidlogin(uid, req, res);
+    let uid = req.session.uid;
+    if (!uid) {
+      wxlogin(req, res);
+    } else {
+      uidlogin(uid, req, res);
+    }
   }
+
 }
 
 function wxlogin(req: Request, res: Response) {
-  let callback = encodeURIComponent('pspjjc.chenxiaofeng.vip/sunnyhouse/auth2callback');
+  let callback = encodeURIComponent('pspjjc.chenxiaofeng.vip');
   let outh2uri = wxdefine.API_URL.oauth2_code.replace('$REDIREC_URI', callback);
   res.redirect(outh2uri);
 }
 
-export function auth2callback(req: Request, res: Response) {
+function auth2callback(req: Request, res: Response) {
   if (req.query.code) {
     let url = wxdefine.API_URL.oauth2_accesstoken.replace('$CODE', req.query.code);
     Axios.get(url).then(function (response: AxiosResponse) {
