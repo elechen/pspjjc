@@ -40,7 +40,7 @@ export function handler(req: Request, res: Response) {
 }
 
 function wxlogin(req: Request, res: Response) {
-  let callback = encodeURIComponent('pspjjc.chenxiaofeng.vip');
+  let callback = encodeURIComponent('http://pspjjc.chenxiaofeng.vip');
   let outh2uri = wxdefine.API_URL.oauth2_code.replace('$REDIREC_URI', callback);
   res.redirect(outh2uri);
 }
