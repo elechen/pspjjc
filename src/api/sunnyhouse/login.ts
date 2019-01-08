@@ -44,16 +44,12 @@ export function auth2callback(req: Request, res: Response) {
   if (req.query.code) {
     let url = wxdefine.API_URL.oauth2_accesstoken.replace('$CODE', req.query.code);
     Axios.get(url).then(function (response: AxiosResponse) {
-      console.log('auth2callback-AxiosResponse:', response);
+      console.log('auth2callback-AxiosResponse:', response.data);
       let data: ACCESS_TOKEN = response.data;
-      console.log(data);
       req.session.uid = data.openid;
       SaveAccessToken(data);
       GetAccessToken(data.openid, (data: ACCESS_TOKEN) => {
         GetUserInfo(req, res);
-        _GetUserInfo(data.openid, (data: USER_INFO) => {
-          res.send('_GetUserInfo:' + JSON.stringify(data));
-        });
       });
     }).catch(function (error) {
       console.log(error);
@@ -79,9 +75,8 @@ export function RefreshAceessToken(req: Request, res: Response) {
   let refresh_token = '';
   let url = wxdefine.API_URL.oauth2_refreshtoken.replace('$REFRESH_TOKEN', refresh_token);
   Axios.get(url).then(function (response: AxiosResponse) {
-    console.log('AxiosResponse', response);
+    console.log('RefreshAceessToken-AxiosResponse', response.data);
     let data: ACCESS_TOKEN = response.data;
-    console.log(data);
     req.session.uid = data.openid;
     SaveAccessToken(data);
   }).catch(function (error) {
@@ -95,16 +90,19 @@ export function GetUserInfo(req: Request, res: Response) {
   let url = wxdefine.API_URL.userinfo.replace('$ACCESS_TOKEN', access_token);
   url = url.replace('$OPENID', openid);
   Axios.get(url).then(function (response: AxiosResponse) {
-    console.log('AxiosResponse', response);
+    console.log('GetUserInfoAxiosResponse', response.data);
     let data: USER_INFO = response.data;
-    console.log(data);
-    SaveUserInfo(data);
+    _SaveUserInfo(data);
+    _GetUserInfo(data.openid, (data: USER_INFO) => {
+      res.send('_GetUserInfo:' + JSON.stringify(data));
+    });
+
   }).catch(function (error) {
     console.log(error);
   });
 }
 
-function SaveUserInfo(data: USER_INFO) {
+function _SaveUserInfo(data: USER_INFO) {
   let uid = data.openid;
   let key = 'userinfo_' + uid;
   redis_cli.set(key, JSON.stringify(data));
