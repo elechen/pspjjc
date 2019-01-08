@@ -12,7 +12,7 @@ router.get('/', function (req: Request, res: Response) {
   }
 });
 
-router.get('auth2callback/', function (req: Request, res: Response) {
+router.get('/auth2callback', function (req: Request, res: Response) {
   login.auth2callback(req, res);
 });
 
