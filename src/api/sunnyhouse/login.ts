@@ -118,7 +118,11 @@ function _GetUserInfo(uid: string, cb: (data: USER_INFO) => void) {
 function uidlogin(uid: string, req: Request, res: Response) {
   if (isvalid(uid)) {
     _GetUserInfo(uid, (data: USER_INFO) => {
-      res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
+      if (data && data.openid === uid) {
+        res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
+      } else {
+        wxlogin(req, res);
+      }
     });
   } else {
     wxlogin(req, res);
