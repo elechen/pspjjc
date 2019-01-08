@@ -26,30 +26,25 @@ interface USER_INFO {
 
 export function handler(req: Request, res: Response) {
   console.log('login-req.query:', JSON.stringify(req.query));
-  if (req.query.code) {
-    auth2callback(req, res);
+  let uid = req.session.uid;
+  if (!uid) {
+    wxlogin(req, res);
   } else {
-    let uid = req.session.uid;
-    if (!uid) {
-      wxlogin(req, res);
-    } else {
-      uidlogin(uid, req, res);
-    }
+    uidlogin(uid, req, res);
   }
-
 }
 
 function wxlogin(req: Request, res: Response) {
-  let callback = encodeURIComponent('http://pspjjc.chenxiaofeng.vip');
+  let callback = encodeURIComponent('http://pspjjc.chenxiaofeng.vip/sunnyhouse/auth2callback');
   let outh2uri = wxdefine.API_URL.oauth2_code.replace('$REDIREC_URI', callback);
   res.redirect(outh2uri);
 }
 
-function auth2callback(req: Request, res: Response) {
+export function auth2callback(req: Request, res: Response) {
   if (req.query.code) {
     let url = wxdefine.API_URL.oauth2_accesstoken.replace('$CODE', req.query.code);
     Axios.get(url).then(function (response: AxiosResponse) {
-      console.log('AxiosResponse', response);
+      console.log('auth2callback-AxiosResponse:', response);
       let data: ACCESS_TOKEN = response.data;
       console.log(data);
       req.session.uid = data.openid;
@@ -124,7 +119,9 @@ function _GetUserInfo(uid: string, cb: (data: USER_INFO) => void) {
 
 function uidlogin(uid: string, req: Request, res: Response) {
   if (isvalid(uid)) {
-    res.send('sucess');
+    _GetUserInfo(uid, (data: USER_INFO) => {
+      res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
+    });
   } else {
     wxlogin(req, res);
   }
