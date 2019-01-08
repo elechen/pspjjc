@@ -47,9 +47,9 @@ export function auth2callback(req: Request, res: Response) {
       console.log('auth2callback-AxiosResponse:', response.data);
       let data: ACCESS_TOKEN = response.data;
       req.session.uid = data.openid;
-      SaveAccessToken(data);
-      GetAccessToken(data.openid, (data: ACCESS_TOKEN) => {
-        GetUserInfo(req, res);
+      _SaveAccessToken(data);
+      _GetAccessToken(data.openid, (data: ACCESS_TOKEN) => {
+        GetUserInfo(req, res, data);
       });
     }).catch(function (error) {
       console.log(error);
@@ -58,13 +58,13 @@ export function auth2callback(req: Request, res: Response) {
   }
 }
 
-function SaveAccessToken(data: ACCESS_TOKEN) {
+function _SaveAccessToken(data: ACCESS_TOKEN) {
   let uid = data.openid;
   let key = 'accesstoken_' + uid;
   redis_cli.set(key, JSON.stringify(data));
 }
 
-function GetAccessToken(uid: string, cb: (data: ACCESS_TOKEN) => void) {
+function _GetAccessToken(uid: string, cb: (data: ACCESS_TOKEN) => void) {
   let key = 'accesstoken_' + uid;
   redis_cli.get(key, (error?: any, reply?: string) => {
     cb(JSON.parse(reply));
@@ -78,15 +78,15 @@ export function RefreshAceessToken(req: Request, res: Response) {
     console.log('RefreshAceessToken-AxiosResponse', response.data);
     let data: ACCESS_TOKEN = response.data;
     req.session.uid = data.openid;
-    SaveAccessToken(data);
+    _SaveAccessToken(data);
   }).catch(function (error) {
     console.log(error);
   });
 }
 
-export function GetUserInfo(req: Request, res: Response) {
-  let openid = '';
-  let access_token = '';
+export function GetUserInfo(req: Request, res: Response, data: ACCESS_TOKEN) {
+  let openid = data.openid;
+  let access_token = data.access_token;
   let url = wxdefine.API_URL.userinfo.replace('$ACCESS_TOKEN', access_token);
   url = url.replace('$OPENID', openid);
   Axios.get(url).then(function (response: AxiosResponse) {
@@ -96,7 +96,6 @@ export function GetUserInfo(req: Request, res: Response) {
     _GetUserInfo(data.openid, (data: USER_INFO) => {
       res.send('_GetUserInfo:' + JSON.stringify(data));
     });
-
   }).catch(function (error) {
     console.log(error);
   });
