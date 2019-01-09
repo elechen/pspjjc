@@ -24,7 +24,6 @@ app.use(session({
 }));
 app.use('/wx', wx_1.router);
 app.use('/sunnyhouse', sunnyhouse_1.router);
-// app.use('/', sunnyhouse);
 app.listen(8000, function () {
     console.log('app is running on port:8000');
 });

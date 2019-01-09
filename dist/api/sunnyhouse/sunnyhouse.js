@@ -13,7 +13,6 @@ exports.router.get('/', function (req, res) {
     }
 });
 exports.router.get('/auth2callback', function (req, res) {
-    console.log('auth2callback');
     login.auth2callback(req, res);
 });
 function GetHandler(req) {
