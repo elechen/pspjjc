@@ -24,18 +24,18 @@ app.use(session({
     cookie: { expires: new Date(Date.now() + expires), maxAge: expires }
 }));
 //跨域调用
-var whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
-var corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        }
-        else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
-};
-app.use(cors(corsOptions));
+// let whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
+// let corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   }
+// };
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use('/wx', wx_1.router);
 app.use('/sunnyhouse', sunnyhouse_1.router);
 app.listen(8000, function () {
