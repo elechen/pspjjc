@@ -38,6 +38,19 @@ function auth2callback(req, res) {
     }
 }
 exports.auth2callback = auth2callback;
+//todo sid to user
+function user(req, res) {
+    var sid = req.query.sid;
+    if (sid) {
+        _GetUserInfo(sid, function (user) {
+            res.send({ code: 'SUCCESS', data: user });
+        });
+    }
+    else {
+        res.send({ msg: "no user" });
+    }
+}
+exports.user = user;
 function _SaveAccessToken(data) {
     var uid = data.openid;
     var key = 'accesstoken_' + uid;
@@ -73,7 +86,7 @@ function GetUserInfo(req, res, data) {
         _SaveUserInfo(data);
         _GetUserInfo(data.openid, function (data) {
             // res.send('_GetUserInfo:' + JSON.stringify(data));
-            var user = { user: data };
+            var user = { sid: data.openid };
             var queryString = GenQueryString(user);
             res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
         });
@@ -98,8 +111,8 @@ function uidlogin(uid, req, res) {
         _GetUserInfo(uid, function (data) {
             if (data && data.openid === uid) {
                 // res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
-                var user = { user: data };
-                var queryString = GenQueryString(user);
+                var user_1 = { sid: uid }; //后面处理为有效期sid可映射uid
+                var queryString = GenQueryString(user_1);
                 res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
             }
             else {

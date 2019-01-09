@@ -15,6 +15,9 @@ exports.router.get('/', function (req, res) {
 exports.router.get('/auth2callback', function (req, res) {
     login.auth2callback(req, res);
 });
+exports.router.get('/user', function (req, res) {
+    login.user(req, res);
+});
 function GetHandler(req) {
     var func = login.handler;
     return func;

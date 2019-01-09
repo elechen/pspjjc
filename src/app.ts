@@ -1,6 +1,7 @@
 require('module-alias/register');
 import * as express from 'express';
 import * as session from 'express-session';
+import * as cors from 'cors';
 import * as connectRedis from 'connect-redis';
 const RedisStore = connectRedis(session);
 
@@ -22,6 +23,19 @@ app.use(session({
   store: new RedisStore(options),
   cookie: { expires: new Date(Date.now() + expires), maxAge: expires }
 }));
+
+//跨域调用
+let whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
+let corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+app.use(cors(corsOptions));
 
 app.use('/wx', wx);
 app.use('/sunnyhouse', sunnyhouse);

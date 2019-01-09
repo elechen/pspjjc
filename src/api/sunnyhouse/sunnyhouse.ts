@@ -16,6 +16,10 @@ router.get('/auth2callback', function (req: Request, res: Response) {
   login.auth2callback(req, res);
 });
 
+router.get('/user', function (req: Request, res: Response) {
+  login.user(req, res);
+});
+
 function GetHandler(req: Request): (req: Request, res: Response) => void {
   let func = login.handler;
   return func;

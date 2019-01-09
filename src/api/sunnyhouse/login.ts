@@ -58,6 +58,18 @@ export function auth2callback(req: Request, res: Response) {
   }
 }
 
+//todo sid to user
+export function user(req: Request, res: Response) {
+  let sid = req.query.sid;
+  if (sid) {
+    _GetUserInfo(sid, (user) => {
+      res.send({ code: 'SUCCESS', data: user });
+    });
+  } else {
+    res.send({ msg: "no user" });
+  }
+}
+
 function _SaveAccessToken(data: ACCESS_TOKEN) {
   let uid = data.openid;
   let key = 'accesstoken_' + uid;
@@ -95,7 +107,7 @@ export function GetUserInfo(req: Request, res: Response, data: ACCESS_TOKEN) {
     _SaveUserInfo(data);
     _GetUserInfo(data.openid, (data: USER_INFO) => {
       // res.send('_GetUserInfo:' + JSON.stringify(data));
-      let user = { user: data };
+      let user = { sid: data.openid };
       let queryString = GenQueryString(user);
       res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
     });
@@ -122,7 +134,7 @@ function uidlogin(uid: string, req: Request, res: Response) {
     _GetUserInfo(uid, (data: USER_INFO) => {
       if (data && data.openid === uid) {
         // res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
-        let user = { user: data };
+        let user = { sid: uid }; //后面处理为有效期sid可映射uid
         let queryString = GenQueryString(user);
         res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
       } else {
