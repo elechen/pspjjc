@@ -75,7 +75,7 @@ function GetUserInfo(req, res, data) {
             // res.send('_GetUserInfo:' + JSON.stringify(data));
             var user = { user: data };
             var queryString = GenQueryString(user);
-            res.redirect('sunnyhouse.chenxiaofeng.vip?' + queryString);
+            res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
         });
     })["catch"](function (error) {
         console.log(error);
@@ -100,7 +100,7 @@ function uidlogin(uid, req, res) {
                 // res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
                 var user = { user: data };
                 var queryString = GenQueryString(user);
-                res.redirect('sunnyhouse.chenxiaofeng.vip?' + queryString);
+                res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
             }
             else {
                 wxlogin(req, res);
