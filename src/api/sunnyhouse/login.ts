@@ -94,7 +94,10 @@ export function GetUserInfo(req: Request, res: Response, data: ACCESS_TOKEN) {
     let data: USER_INFO = response.data;
     _SaveUserInfo(data);
     _GetUserInfo(data.openid, (data: USER_INFO) => {
-      res.send('_GetUserInfo:' + JSON.stringify(data));
+      // res.send('_GetUserInfo:' + JSON.stringify(data));
+      let user = { user: data };
+      let queryString = GenQueryString(user);
+      res.redirect('sunnyhouse.chenxiaofeng.vip?' + queryString);
     });
   }).catch(function (error) {
     console.log(error);
@@ -118,7 +121,10 @@ function uidlogin(uid: string, req: Request, res: Response) {
   if (isvalid(uid)) {
     _GetUserInfo(uid, (data: USER_INFO) => {
       if (data && data.openid === uid) {
-        res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
+        // res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
+        let user = { user: data };
+        let queryString = GenQueryString(user);
+        res.redirect('sunnyhouse.chenxiaofeng.vip?' + queryString);
       } else {
         wxlogin(req, res);
       }
@@ -126,6 +132,13 @@ function uidlogin(uid: string, req: Request, res: Response) {
   } else {
     wxlogin(req, res);
   }
+}
+
+function GenQueryString(obj: {}): string {
+  let queryString = Object.keys(obj).map((key) => {
+    return key + '=' + encodeURIComponent(obj[key]);
+  }).join('&');
+  return queryString;
 }
 
 function isvalid(ui: string): boolean {
