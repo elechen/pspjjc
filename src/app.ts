@@ -28,7 +28,7 @@ app.use(session({
 let whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
 let corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS' + origin));

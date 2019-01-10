@@ -27,7 +27,7 @@ app.use(session({
 var whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
 var corsOptions = {
     origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) {
+        if (!origin || whitelist.indexOf(origin) !== -1) {
             callback(null, true);
         }
         else {
