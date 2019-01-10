@@ -1,6 +1,8 @@
 "use strict";
 exports.__esModule = true;
+var crypto = require("crypto");
 var wxdefine = require("@define/wxdefine");
+var redisdefine = require("@define/redisdefine");
 var axios_1 = require("axios");
 var redis = require("redis");
 var redis_cli = redis.createClient();
@@ -28,9 +30,7 @@ function auth2callback(req, res) {
             var data = response.data;
             req.session.uid = data.openid;
             _SaveAccessToken(data);
-            _GetAccessToken(data.openid, function (data) {
-                GetUserInfo(req, res, data);
-            });
+            GetUserInfo(req, res, data);
         })["catch"](function (error) {
             console.log(error);
             res.send('success');
@@ -38,16 +38,27 @@ function auth2callback(req, res) {
     }
 }
 exports.auth2callback = auth2callback;
-//todo sid to user
 function user(req, res) {
     var sid = req.query.sid;
     if (sid) {
-        _GetUserInfo(sid, function (user) {
-            res.send({ code: 'SUCCESS', data: user });
+        GetUidBySid(sid, function (uid) {
+            if (uid) {
+                _GetUserInfo(uid, function (user) {
+                    if (user) {
+                        res.send({ code: 'SUCCESS', data: user });
+                    }
+                    else {
+                        res.send({ code: 'SUCCESS', msg: "no user(user not found)" });
+                    }
+                });
+            }
+            else {
+                res.send({ code: 'SUCCESS', msg: "no user(uid not found)" });
+            }
         });
     }
     else {
-        res.send({ msg: "no user" });
+        res.send({ code: 'SUCCESS', msg: "no user(sid not found)" });
     }
 }
 exports.user = user;
@@ -84,12 +95,9 @@ function GetUserInfo(req, res, data) {
         console.log('GetUserInfoAxiosResponse', response.data);
         var data = response.data;
         _SaveUserInfo(data);
-        _GetUserInfo(data.openid, function (data) {
-            // res.send('_GetUserInfo:' + JSON.stringify(data));
-            var user = { sid: data.openid };
-            var queryString = GenQueryString(user);
-            res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
-        });
+        var sid = GenUniqueSid();
+        UpdateSid2Uid(sid, data.openid);
+        RedirectToSunnyHouse({ sid: sid }, req, res);
     })["catch"](function (error) {
         console.log(error);
     });
@@ -110,10 +118,9 @@ function uidlogin(uid, req, res) {
     if (isvalid(uid)) {
         _GetUserInfo(uid, function (data) {
             if (data && data.openid === uid) {
-                // res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
-                var user_1 = { sid: uid }; //后面处理为有效期sid可映射uid
-                var queryString = GenQueryString(user_1);
-                res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
+                var sid = GenUniqueSid();
+                UpdateSid2Uid(sid, uid);
+                RedirectToSunnyHouse({ sid: sid }, req, res);
             }
             else {
                 wxlogin(req, res);
@@ -123,6 +130,27 @@ function uidlogin(uid, req, res) {
     else {
         wxlogin(req, res);
     }
+}
+function RedirectToSunnyHouse(query, req, res) {
+    var queryString = GenQueryString(query);
+    res.redirect('http://sunnyhouse.chenxiaofeng.vip/?' + queryString);
+}
+function GenUniqueSid() {
+    return crypto.randomBytes(16).toString('hex');
+}
+function GetUidBySid(sid, cb) {
+    var key = 'sid2uid_' + sid;
+    redis_cli.get(key, function (error, reply) {
+        cb(reply);
+        if (reply) {
+            UpdateSid2Uid(sid, reply);
+        }
+    });
+}
+function UpdateSid2Uid(sid, uid) {
+    var duration = 10; // sid有效期为10分钟
+    var key = 'sid2uid_' + sid;
+    redis_cli.set(key, uid, redisdefine.SET_MODE.EX, duration);
 }
 function GenQueryString(obj) {
     var queryString = Object.keys(obj).map(function (key) {

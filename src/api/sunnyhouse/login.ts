@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
+import * as crypto from 'crypto';
 import * as wxdefine from '@define/wxdefine';
+import * as redisdefine from '@define/redisdefine';
 import Axios, { AxiosResponse } from 'axios';
 import * as redis from 'redis';
 const redis_cli = redis.createClient();
@@ -48,9 +50,7 @@ export function auth2callback(req: Request, res: Response) {
       let data: ACCESS_TOKEN = response.data;
       req.session.uid = data.openid;
       _SaveAccessToken(data);
-      _GetAccessToken(data.openid, (data: ACCESS_TOKEN) => {
-        GetUserInfo(req, res, data);
-      });
+      GetUserInfo(req, res, data);
     }).catch(function (error) {
       console.log(error);
       res.send('success');
@@ -58,15 +58,24 @@ export function auth2callback(req: Request, res: Response) {
   }
 }
 
-//todo sid to user
 export function user(req: Request, res: Response) {
   let sid = req.query.sid;
   if (sid) {
-    _GetUserInfo(sid, (user) => {
-      res.send({ code: 'SUCCESS', data: user });
+    GetUidBySid(sid, (uid) => {
+      if (uid) {
+        _GetUserInfo(uid, (user) => {
+          if (user) {
+            res.send({ code: 'SUCCESS', data: user });
+          } else {
+            res.send({ code: 'SUCCESS', msg: "no user(user not found)" });
+          }
+        });
+      } else {
+        res.send({ code: 'SUCCESS', msg: "no user(uid not found)" });
+      }
     });
   } else {
-    res.send({ msg: "no user" });
+    res.send({ code: 'SUCCESS', msg: "no user(sid not found)" });
   }
 }
 
@@ -105,12 +114,9 @@ export function GetUserInfo(req: Request, res: Response, data: ACCESS_TOKEN) {
     console.log('GetUserInfoAxiosResponse', response.data);
     let data: USER_INFO = response.data;
     _SaveUserInfo(data);
-    _GetUserInfo(data.openid, (data: USER_INFO) => {
-      // res.send('_GetUserInfo:' + JSON.stringify(data));
-      let user = { sid: data.openid };
-      let queryString = GenQueryString(user);
-      res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
-    });
+    let sid = GenUniqueSid();
+    UpdateSid2Uid(sid, data.openid);
+    RedirectToSunnyHouse({ sid: sid }, req, res);
   }).catch(function (error) {
     console.log(error);
   });
@@ -133,10 +139,9 @@ function uidlogin(uid: string, req: Request, res: Response) {
   if (isvalid(uid)) {
     _GetUserInfo(uid, (data: USER_INFO) => {
       if (data && data.openid === uid) {
-        // res.send('uidlogin_GetUserInfo:' + JSON.stringify(data));
-        let user = { sid: uid }; //后面处理为有效期sid可映射uid
-        let queryString = GenQueryString(user);
-        res.redirect('http://sunnyhouse.chenxiaofeng.vip?' + queryString);
+        let sid = GenUniqueSid();
+        UpdateSid2Uid(sid, uid);
+        RedirectToSunnyHouse({ sid: sid }, req, res);
       } else {
         wxlogin(req, res);
       }
@@ -144,6 +149,31 @@ function uidlogin(uid: string, req: Request, res: Response) {
   } else {
     wxlogin(req, res);
   }
+}
+
+function RedirectToSunnyHouse(query: {}, req: Request, res: Response) {
+  let queryString = GenQueryString(query);
+  res.redirect('http://sunnyhouse.chenxiaofeng.vip/?' + queryString);
+}
+
+function GenUniqueSid(): string {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+function GetUidBySid(sid: string, cb: (uid: string) => void): void {
+  const key = 'sid2uid_' + sid;
+  redis_cli.get(key, (error?: any, reply?: string) => {
+    cb(reply);
+    if (reply) {
+      UpdateSid2Uid(sid, reply);
+    }
+  });
+}
+
+function UpdateSid2Uid(sid: string, uid: string) {
+  const duration = 10; // sid有效期为10分钟
+  const key = 'sid2uid_' + sid;
+  redis_cli.set(key, uid, redisdefine.SET_MODE.EX, duration);
 }
 
 function GenQueryString(obj: {}): string {
