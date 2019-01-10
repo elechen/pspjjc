@@ -171,7 +171,7 @@ function GetUidBySid(sid: string, cb: (uid: string) => void): void {
 }
 
 function UpdateSid2Uid(sid: string, uid: string) {
-  const duration = 10; // sid有效期为10分钟
+  const duration = 10 * 60; // sid有效期为10分钟
   const key = 'sid2uid_' + sid;
   redis_cli.set(key, uid, redisdefine.SET_MODE.EX, duration);
 }

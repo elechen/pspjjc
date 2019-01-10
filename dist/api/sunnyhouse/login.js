@@ -148,7 +148,7 @@ function GetUidBySid(sid, cb) {
     });
 }
 function UpdateSid2Uid(sid, uid) {
-    var duration = 10; // sid有效期为10分钟
+    var duration = 10 * 60; // sid有效期为10分钟
     var key = 'sid2uid_' + sid;
     redis_cli.set(key, uid, redisdefine.SET_MODE.EX, duration);
 }
