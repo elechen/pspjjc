@@ -26,7 +26,7 @@ export function PostHandler(): RequestHandler[] {
       let scheme = ret ? ret[0] : 'http';
       let host: string, port: string;
       [host, port] = req.headers.host.split(':');
-      port = port === '80' ? '' : (':' + port);
+      port = (!port || port === '80') ? '' : (':' + port);
       const url = scheme + '://' + host + port + '/upload/' + file.filename;
       res.send({ code: 'SUCCESS', url: url });
     }
