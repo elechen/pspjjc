@@ -23,6 +23,7 @@ app.use(session({
     store: new RedisStore(options),
     cookie: { expires: new Date(Date.now() + expires), maxAge: expires }
 }));
+app.use('/upload', express.static(__dirname + '/upload'));
 // 跨域调用
 var whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
 var corsOptions = {

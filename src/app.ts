@@ -24,6 +24,8 @@ app.use(session({
   cookie: { expires: new Date(Date.now() + expires), maxAge: expires }
 }));
 
+app.use('/upload', express.static(__dirname + '/upload'));
+
 // 跨域调用
 let whitelist = ['http://localhost:8001', 'http://sunnyhouse.chenxiaofeng.vip'];
 let corsOptions = {

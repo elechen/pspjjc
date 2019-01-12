@@ -2,6 +2,8 @@
 exports.__esModule = true;
 var express_1 = require("express");
 var login = require("@api/sunnyhouse/login");
+var upload = require("@api/sunnyhouse/upload");
+var register = require("@api/sunnyhouse/register");
 exports.router = express_1.Router();
 exports.router.get('/', function (req, res) {
     var handler = GetHandler(req);
@@ -18,6 +20,9 @@ exports.router.get('/auth2callback', function (req, res) {
 exports.router.get('/user', function (req, res) {
     login.user(req, res);
 });
+exports.router.post('/upload', upload.PostHandler());
+exports.router.post('/register', register.PostHandler());
+exports.router.get('/register', register.GetHandler());
 function GetHandler(req) {
     var func = login.handler;
     return func;

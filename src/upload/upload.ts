@@ -1,0 +1,1 @@
+export const MAKE_THIS_FOLDER_GENERATED_BY_BUILD_COMMAND = true;
