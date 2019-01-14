@@ -28,6 +28,26 @@ function GetHandler() {
             if (!openid) {
                 res.send({ code: 'SUCCESS', msg: 'no openid' });
             }
+            else if (openid === 'all') {
+                redis_cli.keys('sunnyhouse_regiser_*', function (err, keys) {
+                    if (!keys) {
+                        res.send({ code: 'SUCCESS', msg: 'no keys' });
+                        return;
+                    }
+                    redis_cli.mget(keys, function (err1, reply) {
+                        if (reply) {
+                            var jsonList_1 = [];
+                            reply.forEach(function (element) {
+                                jsonList_1.push(JSON.parse(element));
+                            });
+                            res.send({ code: 'SUCCESS', data: jsonList_1 });
+                        }
+                        else {
+                            res.send({ code: 'SUCCESS', msg: 'no result' });
+                        }
+                    });
+                });
+            }
             else {
                 var key = 'sunnyhouse_regiser_' + openid;
                 redis_cli.get(key, function (err, reply) {

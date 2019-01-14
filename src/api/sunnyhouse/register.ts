@@ -36,7 +36,27 @@ export function GetHandler(): RequestHandler[] {
       let openid: string = req.query.openid;
       if (!openid) {
         res.send({ code: 'SUCCESS', msg: 'no openid' });
-      } else {
+      } else if (openid === 'all') {
+        redis_cli.keys('sunnyhouse_regiser_*', function (err, keys) {
+          if (!keys) {
+            res.send({ code: 'SUCCESS', msg: 'no keys' });
+            return;
+          }
+          redis_cli.mget(keys, (err1, reply) => {
+            if (reply) {
+              let jsonList = [];
+              reply.forEach(element => {
+                jsonList.push(JSON.parse(element));
+              });
+              res.send({ code: 'SUCCESS', data: jsonList });
+            }
+            else {
+              res.send({ code: 'SUCCESS', msg: 'no result' });
+            }
+          });
+        });
+      }
+      else {
         let key = 'sunnyhouse_regiser_' + openid;
         redis_cli.get(key, (err, reply) => {
           res.send({ code: 'SUCCESS', data: JSON.parse(reply) });
