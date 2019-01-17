@@ -28,7 +28,7 @@ function PostHandler() {
             _a = req.headers.host.split(':'), host = _a[0], port = _a[1];
             port = (!port || port === '80') ? '' : (':' + port);
             var url = scheme + '://' + host + port + '/upload/' + file.filename;
-            res.send({ code: 'SUCCESS', url: url });
+            res.send({ code: 'SUCCESS', data: { url: url } });
         }
     ];
 }
