@@ -7,6 +7,7 @@ import * as uuid from 'uuid/v1';
 interface ORDER_DATA {
   orderid?: string;
   openid?: string;
+  room?: number;
 
   //费用列表
   rent?: number;
@@ -15,6 +16,7 @@ interface ORDER_DATA {
   trash?: number;
   water?: number;
   electricity?: number;
+  total?: number;
 
   //抄表记录
   lastwatercnt?: number;
@@ -106,12 +108,12 @@ function CheckOrder(data: ORDER_DATA): string {
   if (!data) {
     return 'no order data';
   } else {
-    let lKey = ['openid',
-      'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity',
+    let lKey = ['openid', 'room',
+      'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity', 'total',
       'watercnt', 'electricitycnt', 'lastwatercnt', 'lastelectricitycnt',
       'fromdate', 'todate'];
     for (const k of lKey) {
-      if (!data[k]) {
+      if (data[k] === undefined) {
         return `no ${k} data`;
       }
     }

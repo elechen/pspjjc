@@ -87,13 +87,13 @@ function CheckOrder(data) {
         return 'no order data';
     }
     else {
-        var lKey = ['openid',
-            'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity',
+        var lKey = ['openid', 'room',
+            'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity', 'total',
             'watercnt', 'electricitycnt', 'lastwatercnt', 'lastelectricitycnt',
             'fromdate', 'todate'];
         for (var _i = 0, lKey_1 = lKey; _i < lKey_1.length; _i++) {
             var k = lKey_1[_i];
-            if (!data[k]) {
+            if (data[k] === undefined) {
                 return "no " + k + " data";
             }
         }
