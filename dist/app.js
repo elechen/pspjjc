@@ -8,6 +8,7 @@ var connectRedis = require("connect-redis");
 var RedisStore = connectRedis(session);
 var wx_1 = require("@api/wx/wx");
 var sunnyhouse_1 = require("@api/sunnyhouse/sunnyhouse");
+var pay_1 = require("@api/pay/pay");
 var options = {
     host: 'localhost',
     port: 6379,
@@ -40,6 +41,7 @@ app.use(cors(corsOptions));
 // app.use(cors());
 app.use('/wx', wx_1.router);
 app.use('/sunnyhouse', sunnyhouse_1.router);
+app.use('/pay', pay_1.router);
 app.listen(8000, function () {
     console.log('app is running on port:8000');
 });

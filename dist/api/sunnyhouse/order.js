@@ -3,7 +3,8 @@ exports.__esModule = true;
 var redis = require("redis");
 var redis_cli = redis.createClient();
 var bodyParser = require("body-parser");
-var uuid = require("uuid/v1");
+var crypto = require("crypto");
+var contract = require("@api/sunnyhouse/contract");
 function PostHandler() {
     return [
         bodyParser.json(),
@@ -15,7 +16,9 @@ function PostHandler() {
             }
             else {
                 if (!data.orderid) {
-                    data.orderid = uuid();
+                    data.orderid = crypto.randomBytes(16).toString('hex');
+                    data.createdtime = Date.now();
+                    contract.addOrder(data.contractid, data.orderid);
                 }
                 var orderid = data.orderid;
                 var key = 'sunnyhouse_order_' + data.orderid;
@@ -70,8 +73,11 @@ function DelHandler() {
                 return;
             }
             var key = 'sunnyhouse_order_' + data.orderid;
-            redis_cli.del(key, function (num) {
-                if (num) {
+            redis_cli.get(key, function (err, reply) {
+                if (reply) {
+                    var c = JSON.parse(reply);
+                    contract.delOrder(c.contractid, c.orderid);
+                    redis_cli.del(key);
                     res.send({ code: 'SUCCESS' });
                 }
                 else {
@@ -87,7 +93,7 @@ function CheckOrder(data) {
         return 'no order data';
     }
     else {
-        var lKey = ['openid', 'room',
+        var lKey = ['openid', 'contractid', 'room',
             'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity', 'total',
             'watercnt', 'electricitycnt', 'lastwatercnt', 'lastelectricitycnt',
             'fromdate', 'todate'];

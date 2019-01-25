@@ -7,6 +7,7 @@ const RedisStore = connectRedis(session);
 
 import { router as wx } from '@api/wx/wx';
 import { router as sunnyhouse } from '@api/sunnyhouse/sunnyhouse';
+import { router as pay } from '@api/pay/pay';
 
 const options = {
   host: 'localhost',
@@ -42,6 +43,7 @@ app.use(cors(corsOptions));
 
 app.use('/wx', wx);
 app.use('/sunnyhouse', sunnyhouse);
+app.use('/pay', pay);
 
 app.listen(8000, function () {
   console.log('app is running on port:8000');

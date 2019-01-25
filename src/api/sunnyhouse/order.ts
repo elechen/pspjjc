@@ -2,11 +2,15 @@ import { Request, Response, RequestHandler } from 'express';
 import * as redis from 'redis';
 const redis_cli = redis.createClient();
 import * as  bodyParser from 'body-parser';
-import * as uuid from 'uuid/v1';
+import * as crypto from 'crypto';
+
+import * as contract from '@api/sunnyhouse/contract';
 
 interface ORDER_DATA {
   orderid?: string;
+  createdtime?: number;
   openid?: string;
+  contractid?: string;
   room?: number;
 
   //费用列表
@@ -28,6 +32,7 @@ interface ORDER_DATA {
 
   //微信支付订单号，如果有则认为已支付
   transaction_id?: string;
+  finishedtime?: number;
 }
 
 export function PostHandler(): RequestHandler[] {
@@ -40,7 +45,9 @@ export function PostHandler(): RequestHandler[] {
         res.send({ code: 'SUCCESS', msg: err });
       } else {
         if (!data.orderid) {
-          data.orderid = uuid();
+          data.orderid = crypto.randomBytes(16).toString('hex');
+          data.createdtime = Date.now();
+          contract.addOrder(data.contractid, data.orderid);
         }
         let orderid = data.orderid;
         let key = 'sunnyhouse_order_' + data.orderid;
@@ -93,8 +100,11 @@ export function DelHandler(): RequestHandler[] {
         return;
       }
       let key = 'sunnyhouse_order_' + data.orderid;
-      redis_cli.del(key, (num) => {
-        if (num) {
+      redis_cli.get(key, (err, reply) => {
+        if (reply) {
+          let c = JSON.parse(reply) as ORDER_DATA;
+          contract.delOrder(c.contractid, c.orderid);
+          redis_cli.del(key);
           res.send({ code: 'SUCCESS' });
         } else {
           res.send({ code: 'SUCCESS', msg: 'not find orderid' });
@@ -108,7 +118,7 @@ function CheckOrder(data: ORDER_DATA): string {
   if (!data) {
     return 'no order data';
   } else {
-    let lKey = ['openid', 'room',
+    let lKey = ['openid', 'contractid', 'room',
       'rent', 'deposit', 'wifi', 'trash', 'water', 'electricity', 'total',
       'watercnt', 'electricitycnt', 'lastwatercnt', 'lastelectricitycnt',
       'fromdate', 'todate'];

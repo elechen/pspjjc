@@ -3,7 +3,7 @@ exports.__esModule = true;
 var redis = require("redis");
 var redis_cli = redis.createClient();
 var bodyParser = require("body-parser");
-var uuid = require("uuid/v1");
+var crypto = require("crypto");
 var register = require("@api/sunnyhouse/register");
 function PostHandler() {
     return [
@@ -16,7 +16,7 @@ function PostHandler() {
             }
             else {
                 if (!data.contractid) {
-                    data.contractid = uuid();
+                    data.contractid = crypto.randomBytes(16).toString('hex');
                     addToNewList(data.contractid);
                     register.addContractToRegister(data.openid, data.contractid);
                 }
@@ -42,6 +42,39 @@ function addToNewList(contractid) {
         }
     });
 }
+function addOrder(contractid, orderid) {
+    var key = 'sunnyhouse_contract_' + contractid;
+    redis_cli.get(key, function (err, reply) {
+        var c = JSON.parse(reply);
+        if (c) {
+            if (c.orderid) {
+                if (c.orderid.indexOf(orderid) === -1) {
+                    c.orderid.push(orderid);
+                    redis_cli.set(key, JSON.stringify(c));
+                }
+            }
+            else {
+                c.orderid = [orderid];
+                redis_cli.set(key, JSON.stringify(c));
+            }
+        }
+    });
+}
+exports.addOrder = addOrder;
+function delOrder(contractid, orderid) {
+    var key = 'sunnyhouse_contract_' + contractid;
+    redis_cli.get(key, function (err, reply) {
+        var c = JSON.parse(reply);
+        if (c && c.orderid) {
+            var idx = c.orderid.indexOf(orderid);
+            if (idx !== -1) {
+                c.orderid.splice(idx);
+                redis_cli.set(key, JSON.stringify(c));
+            }
+        }
+    });
+}
+exports.delOrder = delOrder;
 function GetHandler() {
     return [
         function (req, res) {

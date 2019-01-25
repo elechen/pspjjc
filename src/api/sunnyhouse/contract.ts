@@ -2,12 +2,13 @@ import { Request, Response, RequestHandler } from 'express';
 import * as redis from 'redis';
 const redis_cli = redis.createClient();
 import * as  bodyParser from 'body-parser';
-import * as uuid from 'uuid/v1';
+import * as crypto from 'crypto';
 import * as register from '@api/sunnyhouse/register';
 
 interface CONTRACT_DATA {
   contractid?: string;
   openid?: string;
+  orderid?: string[];
   rent: number;
   watercnt: number;
   electricitycnt: number;
@@ -26,7 +27,7 @@ export function PostHandler(): RequestHandler[] {
         res.send({ code: 'SUCCESS', msg: err });
       } else {
         if (!data.contractid) {
-          data.contractid = uuid();
+          data.contractid = crypto.randomBytes(16).toString('hex');
           addToNewList(data.contractid);
           register.addContractToRegister(data.openid, data.contractid);
         }
@@ -48,6 +49,38 @@ function addToNewList(contractid: string) {
       if (idx === -1) {
         lst.push(contractid);
         redis_cli.set(key1, JSON.stringify(lst));
+      }
+    }
+  });
+}
+
+export function addOrder(contractid: string, orderid: string) {
+  let key = 'sunnyhouse_contract_' + contractid;
+  redis_cli.get(key, (err, reply) => {
+    let c: CONTRACT_DATA = JSON.parse(reply);
+    if (c) {
+      if (c.orderid) {
+        if (c.orderid.indexOf(orderid) === -1) {
+          c.orderid.push(orderid);
+          redis_cli.set(key, JSON.stringify(c));
+        }
+      } else {
+        c.orderid = [orderid];
+        redis_cli.set(key, JSON.stringify(c));
+      }
+    }
+  });
+}
+
+export function delOrder(contractid: string, orderid: string) {
+  let key = 'sunnyhouse_contract_' + contractid;
+  redis_cli.get(key, (err, reply) => {
+    let c: CONTRACT_DATA = JSON.parse(reply);
+    if (c && c.orderid) {
+      let idx = c.orderid.indexOf(orderid);
+      if (idx !== -1) {
+        c.orderid.splice(idx);
+        redis_cli.set(key, JSON.stringify(c));
       }
     }
   });

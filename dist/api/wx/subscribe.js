@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var mputils = require("@utils/wxutils");
+var wxutils = require("@utils/wxutils");
 function handler(req, res) {
     res.setHeader('Content-Type', 'text/xml');
     res.send(genResponseXml(req.body.xml));
@@ -14,5 +14,5 @@ function genResponseXml(query) {
         'MsgType': 'text',
         'Content': '感谢您的关注'
     };
-    return mputils.GenXml(obj);
+    return wxutils.GenXml(obj);
 }

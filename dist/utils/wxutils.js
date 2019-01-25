@@ -1,7 +1,19 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 exports.__esModule = true;
 var wxdefine = require("@define/wxdefine");
 var request = require("request");
+var crypto = require("crypto");
 function GenXml(object) {
     var xml = '<xml>';
     for (var key in object) {
@@ -37,3 +49,26 @@ function GetAccessToken(cb) {
     }
 }
 exports.GetAccessToken = GetAccessToken;
+function CalSign(data) {
+    var keys = Object.keys(data);
+    keys.sort();
+    var kv = keys.map(function (x) { return x + "=" + data[x]; });
+    var str = kv.join('&') + '&key=' + wxdefine.MCHKEY;
+    var md5 = crypto.createHash('md5');
+    var sign = md5.update(str).digest('hex').toUpperCase();
+    console.log(str, sign);
+    return sign;
+}
+exports.CalSign = CalSign;
+function CheckSign(data) {
+    if (!data) {
+        return false;
+    }
+    else {
+        var params = __assign({}, data);
+        delete params.sign;
+        var sign = CalSign(params);
+        return sign === data.sign;
+    }
+}
+exports.CheckSign = CheckSign;

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as mputils from '@utils/wxutils';
+import * as wxutils from '@utils/wxutils';
 
 export function handler(req: Request, res: Response) {
   res.setHeader('Content-Type', 'text/xml');
@@ -14,5 +14,5 @@ function genResponseXml(query: {}): string {
     'MsgType': 'text',
     'Content': '感谢您的关注'
   };
-  return mputils.GenXml(obj);
+  return wxutils.GenXml(obj);
 }
