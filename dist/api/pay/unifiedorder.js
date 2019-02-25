@@ -39,7 +39,7 @@ function GetHandler() {
                     if (data.return_code === 'SUCCESS') {
                         if (data.result_code === 'SUCCESS') {
                             var appId = wxdefine.APPID;
-                            var timeStamp = Math.ceil(Date.now() / 1000);
+                            var timeStamp = Math.ceil(Date.now() / 1000).toString();
                             var nonceStr = Math.random().toString().substr(2, 8);
                             var packageInfo = 'prepay_id=' + data.prepay_id;
                             var prepay = { appId: appId, timeStamp: timeStamp, nonceStr: nonceStr, package: packageInfo, signType: 'MD5' };

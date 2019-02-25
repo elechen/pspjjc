@@ -24,7 +24,7 @@ interface ORDER_DATA {
 
 interface PREPAY_DATA {
   appId: string;
-  timeStamp: number;
+  timeStamp: string;
   nonceStr: string;
   package: string; //提交格式如：prepay_id=\*\*\*）
   signType: string;
@@ -53,7 +53,7 @@ export function GetHandler(): RequestHandler[] {
           if (data.return_code === 'SUCCESS') {
             if (data.result_code === 'SUCCESS') {
               let appId = wxdefine.APPID;
-              let timeStamp = Math.ceil(Date.now() / 1000);
+              let timeStamp = Math.ceil(Date.now() / 1000).toString();
               let nonceStr = Math.random().toString().substr(2, 8);
               let packageInfo = 'prepay_id=' + data.prepay_id;
               let prepay: PREPAY_DATA = { appId, timeStamp, nonceStr, package: packageInfo, signType: 'MD5' };
