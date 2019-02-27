@@ -43,7 +43,7 @@ export function PostHandler(): RequestHandler[] {
       let data: NOTIFY_DATA = req.body;
       let bPass = wxutils.CheckSign(data);
       if (bPass) {
-        let orderid = data.attach;
+        let orderid = data.out_trade_no;
         let key = 'sunnyhouse_order_' + orderid;
         redis_cli.get(key, (err, reply) => {
           if (reply) {

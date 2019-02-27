@@ -11,7 +11,7 @@ function PostHandler() {
             var data = req.body;
             var bPass = wxutils.CheckSign(data);
             if (bPass) {
-                var orderid = data.attach;
+                var orderid = data.out_trade_no;
                 var key_1 = 'sunnyhouse_order_' + orderid;
                 redis_cli.get(key_1, function (err, reply) {
                     if (reply) {
