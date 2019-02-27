@@ -51,7 +51,7 @@ function GetHandler() {
                         }
                     }
                     else {
-                        res.send({ code: 'FAIL', msg: 'return_msg:' + data.return_msg });
+                        res.send({ code: 'FAIL', msg: data.return_msg });
                     }
                 });
             });

@@ -63,7 +63,7 @@ export function GetHandler(): RequestHandler[] {
               res.send({ code: 'FAIL', msg: 'err_code:' + data.err_code });
             }
           } else {
-            res.send({ code: 'FAIL', msg: 'return_msg:' + data.return_msg });
+            res.send({ code: 'FAIL', msg: data.return_msg });
           }
         });
       });

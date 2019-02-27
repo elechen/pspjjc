@@ -6,7 +6,7 @@ import * as crypto from 'crypto';
 
 import * as contract from '@api/sunnyhouse/contract';
 
-interface ORDER_DATA {
+export interface ORDER_DATA {
   orderid?: string;
   createdtime?: number;
   openid?: string;
@@ -32,7 +32,7 @@ interface ORDER_DATA {
 
   //微信支付订单号，如果有则认为已支付
   transaction_id?: string;
-  finishedtime?: number;
+  finishedtime?: string;
 }
 
 export function PostHandler(): RequestHandler[] {
