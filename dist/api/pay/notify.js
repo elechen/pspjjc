@@ -8,7 +8,7 @@ function PostHandler() {
     return [
         xmlparser({ trim: false, explicitArray: false }),
         function (req, res) {
-            var data = req.body;
+            var data = req.body.xml;
             var bPass = wxutils.CheckSign(data);
             if (bPass) {
                 var orderid = data.out_trade_no;

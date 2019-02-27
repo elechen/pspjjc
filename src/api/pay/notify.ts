@@ -40,7 +40,7 @@ export function PostHandler(): RequestHandler[] {
   return [
     xmlparser({ trim: false, explicitArray: false }),
     function (req: Request, res: Response) {
-      let data: NOTIFY_DATA = req.body;
+      let data: NOTIFY_DATA = req.body.xml;
       let bPass = wxutils.CheckSign(data);
       if (bPass) {
         let orderid = data.out_trade_no;
